@@ -50,10 +50,10 @@ class WeekendAutomation {
         const minutes = now.getMinutes();
         const seconds = now.getSeconds();
 
-        // Between 6:29:50 and 6:30:30
+        // Between 6:30:05 and 6:30:30 (give slots 5 seconds to load)
         const currentTimeInSeconds = hours * 3600 + minutes * 60 + seconds;
-        const startWindow = 6 * 3600 + 29 * 60 + 50;
-        const endWindow = 6 * 3600 + 30 * 60 + 30;
+        const startWindow = 6 * 3600 + 30 * 60 + 5;  // 6:30:05
+        const endWindow = 6 * 3600 + 30 * 60 + 30;   // 6:30:30
 
         return currentTimeInSeconds >= startWindow && currentTimeInSeconds <= endWindow;
     }

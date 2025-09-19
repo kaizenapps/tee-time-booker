@@ -484,7 +484,7 @@ class GolfBookingService {
     }
 
     // Make a reservation for a specific slot with retry logic
-    async makeReservation(slot, guests, mainPlayerName = 'Habib, Jake', maxRetries = 10) {
+    async makeReservation(slot, guests, mainPlayerName = 'Habib, Jake', maxRetries = 10, preferredTime = null, maxTime = null) {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 console.log(`🎯 [Attempt ${attempt}/${maxRetries}] Making reservation for ${slot.time} on ${slot.date}`);
@@ -723,15 +723,34 @@ class GolfBookingService {
                 console.log(`🔍 Confirmation details: Date="${actualDate}", Time="${actualTime}"`);
                 console.log(`🔍 Expected: Date="${expectedDateString}", Time="${slot.time}"`);
                 
-                // Check if both date and time match what we requested
+                // Check if both date and time are acceptable
                 const dateMatches = actualDate.includes(expectedDateString) || expectedDateString.includes(actualDate.replace(/,.*$/, ''));
-                const timeMatches = actualTime === slot.time;
-                
-                if (dateMatches && timeMatches) {
-                    console.log(`✅ Booking confirmed! Requested: ${slot.time}, Actual: ${actualTime}, Date: ${actualDate}`);
+                const exactTimeMatch = actualTime === slot.time;
+
+                // Also check if the actual time is within our acceptable range (if provided)
+                let withinRange = false;
+                if (preferredTime && maxTime) {
+                    try {
+                        const actualTimeMin = this.timeToMinutes(actualTime);
+                        const preferredTimeMin = this.timeToMinutes(preferredTime);
+                        const maxTimeMin = this.timeToMinutes(maxTime);
+                        withinRange = actualTimeMin >= preferredTimeMin && actualTimeMin <= maxTimeMin;
+                    } catch (error) {
+                        console.log(`⚠️ Could not parse time for range check: ${actualTime}`);
+                    }
+                }
+
+                const timeAcceptable = exactTimeMatch || withinRange;
+
+                if (dateMatches && timeAcceptable) {
+                    if (exactTimeMatch) {
+                        console.log(`✅ Booking confirmed! Requested: ${slot.time}, Actual: ${actualTime}, Date: ${actualDate}`);
+                    } else {
+                        console.log(`✅ Booking confirmed with time adjustment! Requested: ${slot.time}, Actual: ${actualTime} (within acceptable range), Date: ${actualDate}`);
+                    }
                     return {
                         success: true,
-                        message: 'Booking confirmed!',
+                        message: exactTimeMatch ? 'Booking confirmed!' : `Booking confirmed with time adjustment: ${actualTime}`,
                         slot: {
                             ...slot,
                             requestedTime: slot.time,
@@ -742,7 +761,7 @@ class GolfBookingService {
                     };
                 } else {
                     console.log(`⚠️ Confirmation found but details don't match our request`);
-                    console.log(`Date match: ${dateMatches}, Time match: ${timeMatches}`);
+                    console.log(`Date match: ${dateMatches}, Exact time match: ${exactTimeMatch}, Within range: ${withinRange}`);
                     // This might be a confirmation for a different booking, continue trying
                 }
             } else if (responseText.includes('There is not another available reservation at this timeslot')) {
@@ -835,7 +854,7 @@ class GolfBookingService {
                         if (inRange) {
                             // BOOK IMMEDIATELY - first slot of highest available priority
                             console.log(`⚡ FAST: Booking ${slot.time} (${slot.availableSpots}/4 spots, Priority ${priority})`);
-                            return await this.makeReservation(slot, guests);
+                            return await this.makeReservation(slot, guests, 'Habib, Jake', 10, preferredTime, maxTime);
                         }
                     }
                 }
@@ -944,7 +963,7 @@ class GolfBookingService {
             const targetSlot = availableSlots[0];
             console.log(`Attempting to book: ${targetSlot.time} with ${targetSlot.availableSpots} spots`);
 
-            const result = await this.makeReservation(targetSlot, guests);
+            const result = await this.makeReservation(targetSlot, guests, 'Habib, Jake', 10, preferredTime, maxTime);
 
             return result;
         } catch (error) {
