@@ -19,18 +19,15 @@ class GolfBookingService {
             withCredentials: true,
             timeout: 30000, // Increased timeout for Cloudflare
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0',
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
                 'Accept-Language': 'en-US,en;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1',
-                'Sec-Fetch-Dest': 'document',
-                'Sec-Fetch-Mode': 'navigate',
-                'Sec-Fetch-Site': 'none',
-                'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+                'Sec-CH-UA': '"Chromium";v="140", "Not=A?Brand";v="24", "Microsoft Edge";v="140"',
                 'Sec-CH-UA-Mobile': '?0',
-                'Sec-CH-UA-Platform': '"Windows"'
+                'Sec-CH-UA-Platform': '"Windows"',
+                'Priority': 'u=1, i'
             }
         }));
     }
@@ -83,6 +80,32 @@ class GolfBookingService {
                 if (attempt > 1) {
                     console.log(`Waiting ${retryDelay/1000}s before retry...`);
                     await new Promise(resolve => setTimeout(resolve, retryDelay));
+                }
+
+                // Add random delay to appear more human-like
+                const humanDelay = Math.random() * 2000 + 1000; // 1-3 seconds
+                console.log(`Adding human-like delay: ${Math.round(humanDelay)}ms`);
+                await new Promise(resolve => setTimeout(resolve, humanDelay));
+
+                // Step 0: Access main page first to establish session and get past Cloudflare
+                console.log('Accessing main page to establish session...');
+                try {
+                    await this.client.get(`${this.baseURL}/`, {
+                        headers: {
+                            'Cache-Control': 'max-age=0',
+                            'Sec-Fetch-Dest': 'document',
+                            'Sec-Fetch-Mode': 'navigate',
+                            'Sec-Fetch-Site': 'none',
+                            'Sec-Fetch-User': '?1',
+                            'Upgrade-Insecure-Requests': '1'
+                        }
+                    });
+                    console.log('Main page accessed successfully');
+
+                    // Short delay after accessing main page
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                } catch (pageError) {
+                    console.log('Main page access failed, continuing with auth...', pageError.message);
                 }
 
                 // Step 1: Get encryption key
@@ -139,6 +162,15 @@ class GolfBookingService {
                         login: 'true',
                         sessionToken: this.sessionToken,
                         gotopage: 'p=MembersDefault'
+                    },
+                    headers: {
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                        'Sec-Fetch-Site': 'same-origin',
+                        'Sec-Fetch-Mode': 'navigate',
+                        'Sec-Fetch-Dest': 'document',
+                        'Upgrade-Insecure-Requests': '1',
+                        'Priority': 'u=0, i',
+                        'Referer': 'https://www.trumpcoltsneck.com/'
                     },
                     maxRedirects: 5
                 }
