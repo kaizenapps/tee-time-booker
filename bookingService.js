@@ -72,11 +72,21 @@ class GolfBookingService {
 
     // Authenticate with the golf site
     async authenticate(username, password) {
-        try {
-            console.log('Starting authentication for:', username);
+        const maxRetries = 3;
+        const retryDelay = 3000; // 3 seconds between retries
 
-            // Step 1: Get encryption key
-            const step1Response = await this.client.post(
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                console.log(`Starting authentication for: ${username} (attempt ${attempt}/${maxRetries})`);
+
+                // Add small delay before authentication to avoid rapid-fire requests
+                if (attempt > 1) {
+                    console.log(`Waiting ${retryDelay/1000}s before retry...`);
+                    await new Promise(resolve => setTimeout(resolve, retryDelay));
+                }
+
+                // Step 1: Get encryption key
+                const step1Response = await this.client.post(
                 `${this.baseURL}/a_master/net/net_advancedlogin/login.asmx/loginStep1`,
                 JSON.stringify({ lstep: 1 }),
                 {
@@ -160,10 +170,20 @@ class GolfBookingService {
             } else {
                 throw new Error('Login failed - still showing login page');
             }
-        } catch (error) {
-            console.error('Authentication error:', error.message);
-            return { success: false, error: error.message };
+            } catch (error) {
+                console.error(`Authentication error (attempt ${attempt}/${maxRetries}):`, error.message);
+
+                // If this is the last attempt, return the error
+                if (attempt === maxRetries) {
+                    return { success: false, error: error.message };
+                }
+
+                // Otherwise continue to next attempt (delay is handled at start of loop)
+            }
         }
+
+        // If we get here, all retries failed
+        return { success: false, error: 'Authentication failed after all retries' };
     }
 
     // Get tee sheet for a specific date with retry logic

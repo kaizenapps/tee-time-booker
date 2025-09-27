@@ -1157,7 +1157,7 @@ cron.schedule('30 29 6 * * 0,6', async () => {
     try {
         if (!weekendAutomation) return;
 
-        const now = weekendAutomation.getCurrentEDT();
+        const now = new Date();
         console.log(`🔥 [${now.toLocaleTimeString()}] Pre-warming for weekend booking...`);
         await weekendAutomation.preWarmConnection();
     } catch (error) {
