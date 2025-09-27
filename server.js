@@ -140,7 +140,7 @@ async function processBooking(booking, userSettings) {
         let bookingDate;
         if (typeof booking.date === 'string') {
             if (booking.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                bookingDate = new Date(booking.date + 'T12:00:00');
+                bookingDate = new Date(booking.date);
             } else {
                 bookingDate = new Date(booking.date);
             }
@@ -422,8 +422,7 @@ app.post('/api/bookings', authenticateToken, async (req, res) => {
         }
 
         // Calculate when booking opens (1 week prior at 6:30 AM Eastern)
-        // Ensure we use noon local time to avoid timezone conversion issues
-        const bookingDate = new Date(date + 'T12:00:00');
+        const bookingDate = new Date(date);
         const opensAt = new Date(bookingDate);
         opensAt.setDate(opensAt.getDate() - 7);
         opensAt.setHours(6, 30, 0, 0);
@@ -543,12 +542,7 @@ app.post('/api/bookings/:id/trigger', authenticateToken, async (req, res) => {
         // Convert date properly
         let bookingDate;
         if (typeof booking.date === 'string' || booking.date instanceof Date) {
-            const dateStr = booking.date.toString();
-            if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                bookingDate = new Date(dateStr + 'T12:00:00');
-            } else {
-                bookingDate = new Date(dateStr);
-            }
+            bookingDate = new Date(booking.date);
         } else {
             bookingDate = new Date(booking.date);
         }
@@ -891,7 +885,7 @@ app.post('/api/test/weekend-booking', authenticateToken, async (req, res) => {
         console.log(`🧪 TEST MODE: Forcing weekend booking for ${date}`);
         
         // Convert date string to Date object
-        const targetDate = new Date(date + 'T12:00:00');
+        const targetDate = new Date(date);
         
         if (isNaN(targetDate.getTime())) {
             return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
@@ -969,7 +963,7 @@ app.post('/api/weekend-attempt/:date', async (req, res) => {
         }
 
         // Parse the date
-        const targetDate = new Date(date + 'T12:00:00');
+        const targetDate = new Date(date);
         const dayOfWeek = targetDate.getDay();
 
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
@@ -1169,8 +1163,6 @@ cron.schedule('30 29 6 * * 0,6', async () => {
     } catch (error) {
         console.error('❌ Pre-warm error:', error);
     }
-}, {
-    timezone: "America/New_York"
 });
 
 // 4. Weekend real-time booking - runs at 6:30 AM EDT on weekends
@@ -1178,14 +1170,12 @@ cron.schedule('0-10 30 6 * * 0,6', async () => {
     try {
         if (!weekendAutomation) return;
 
-        const now = weekendAutomation.getCurrentEDT();
+        const now = new Date();
         console.log(`🎯 [${now.toLocaleTimeString()}] WEEKEND REAL-TIME BOOKING WINDOW!`);
         await weekendAutomation.executeRealTimeBooking();
     } catch (error) {
         console.error('❌ Weekend real-time booking error:', error);
     }
-}, {
-    timezone: "America/New_York"
 });
 
 // Catch all handler - serve React app for any route not handled by API

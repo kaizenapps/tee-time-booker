@@ -466,7 +466,6 @@ const App = () => {
             hour: 'numeric',
             minute: '2-digit',
             hour12: true,
-            timeZone: 'America/New_York'
         });
     };
 
@@ -652,8 +651,6 @@ const App = () => {
                                                                         try {
                                                                             const date = new Date(booking.last_attempt);
                                                                             if (isNaN(date.getTime())) return 'Invalid';
-                                                                            // Assume database is UTC, subtract 4 hours for EDT
-                                                                            date.setHours(date.getHours() - 4);
                                                                             return date.toLocaleString('en-US', {
                                                                                 month: 'short', day: 'numeric', hour: 'numeric', 
                                                                                 minute: '2-digit', hour12: true
@@ -706,8 +703,6 @@ const App = () => {
                                                                         try {
                                                                             const date = new Date(log.created_at);
                                                                             if (isNaN(date.getTime())) return 'Invalid';
-                                                                            // Force same calculation as "Last" field - subtract 7 more hours to match
-                                                                            date.setHours(date.getHours() - 11);
                                                                             return date.toLocaleString('en-US', {
                                                                                 month: 'short', day: 'numeric', hour: 'numeric', 
                                                                                 minute: '2-digit', hour12: true
@@ -850,7 +845,7 @@ const App = () => {
                                                             <div className="flex items-center justify-between">
                                                                 <div>
                                                                     <h4 className="font-semibold">
-                                                                        Saturday {new Date(weekend.saturday.date + 'T12:00:00').toLocaleDateString('en-US', {
+                                                                        Saturday {new Date(weekend.saturday.date).toLocaleDateString('en-US', {
                                                                         month: 'short',
                                                                         day: 'numeric'
                                                                     })}
@@ -879,7 +874,7 @@ const App = () => {
                                                             <div className="flex items-center justify-between">
                                                                 <div>
                                                                     <h4 className="font-semibold">
-                                                                        Sunday {new Date(weekend.sunday.date + 'T12:00:00').toLocaleDateString('en-US', {
+                                                                        Sunday {new Date(weekend.sunday.date).toLocaleDateString('en-US', {
                                                                         month: 'short',
                                                                         day: 'numeric'
                                                                     })}
@@ -956,7 +951,7 @@ const App = () => {
                                                 if (entry.target_date) {
                                                     // Handle MySQL date format (YYYY-MM-DD or ISO string)
                                                     const dateStr = entry.target_date.split('T')[0]; // Get just the date part
-                                                    targetDate = new Date(dateStr + 'T12:00:00'); // Add noon time to avoid timezone issues
+                                                    targetDate = new Date(dateStr);
                                                 }
 
                                                 return (

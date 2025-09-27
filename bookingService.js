@@ -157,23 +157,15 @@ class GolfBookingService {
 
     // Get tee sheet for a specific date with retry logic
     async getTeeSheet(date, maxRetries = 10) {
-        // Ensure date is valid and handle timezone issues
+        // Ensure date is valid
         if (typeof date === 'string') {
-            if (date.includes('GMT')) {
-                date = new Date(date);
-            } else if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                // Use noon local time to avoid timezone issues
-                date = new Date(date + 'T12:00:00');
-            } else {
-                date = new Date(date);
-            }
+            date = new Date(date);
         }
 
         if (isNaN(date.getTime())) {
             throw new Error(`Invalid date: ${date}`);
         }
 
-        // Use local date components to avoid timezone conversion issues
         const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
         
         // Also create an alternative format in case the server expects different formatting

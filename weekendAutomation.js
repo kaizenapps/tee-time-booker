@@ -5,17 +5,12 @@ class WeekendAutomation {
     constructor(pool) {
         this.pool = pool;
         this.bookingService = new GolfBookingService();
-        this.timeZone = 'America/New_York'; // Always EDT/EST
         this.isBookingInProgress = false;
         this.bookingAttempts = new Map(); // Track attempts per date
         this.maxWeekendBookings = 4; // Maximum weekends to have booked
         this.catchUpInProgress = false;
     }
 
-    // Get current time in EDT
-    getCurrentEDT() {
-        return new Date(new Date().toLocaleString("en-US", { timeZone: this.timeZone }));
-    }
 
     // Format date for database (YYYY-MM-DD)
     formatDate(date) {
@@ -27,7 +22,7 @@ class WeekendAutomation {
 
     // Get the target weekend date (7 days from today)
     getTargetWeekendDate() {
-        const now = this.getCurrentEDT();
+        const now = new Date();
         const targetDate = new Date(now);
         targetDate.setDate(targetDate.getDate() + 7);
         return targetDate;
@@ -35,7 +30,7 @@ class WeekendAutomation {
 
     // Check if booking window is open for a date
     isBookingWindowOpen(targetDate) {
-        const now = this.getCurrentEDT();
+        const now = new Date();
         const bookingOpens = new Date(targetDate);
         bookingOpens.setDate(bookingOpens.getDate() - 7);
         bookingOpens.setHours(6, 30, 0, 0);
@@ -45,7 +40,7 @@ class WeekendAutomation {
 
     // Check if current time is the optimal booking window (6:30 AM)
     isOptimalBookingTime() {
-        const now = this.getCurrentEDT();
+        const now = new Date();
         const hours = now.getHours();
         const minutes = now.getMinutes();
         const seconds = now.getSeconds();
@@ -390,7 +385,7 @@ class WeekendAutomation {
 
     // Real-time booking: Book exactly when window opens
     async executeRealTimeBooking() {
-        const now = this.getCurrentEDT();
+        const now = new Date();
         const dayOfWeek = now.getDay();
 
         // Only run on Saturday (6) or Sunday (0)
@@ -421,7 +416,7 @@ class WeekendAutomation {
     // Get next 6 weekends with their booking status
     async getNext6Weekends() {
         const weekends = [];
-        const now = this.getCurrentEDT();
+        const now = new Date();
 
         // Calculate next 6 weekends
         for (let i = 0; i < 6; i++) {
@@ -483,7 +478,7 @@ class WeekendAutomation {
     // Get upcoming weekends for UI display
     async getUpcomingWeekends() {
         const weekends = [];
-        const now = this.getCurrentEDT();
+        const now = new Date();
 
         // Calculate next 4 weekends (for UI display)
         for (let i = 0; i < 4; i++) {
