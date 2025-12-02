@@ -1,0 +1,53 @@
+[33me183f07[m[33m ([m[1;36mHEAD[m[33m)[m fix auth
+[33m39a607b[m fix auth
+[33m609c92f[m fix time convert
+[33m80904ba[m fix time convert
+[33mbfed438[m fixed the mismatch log error
+[33meb51ee6[m fixed the mismatch log error
+[33ma37ce4d[m fixed the mismatch log error
+[33m62b046f[m fixed  a bug in fast mode
+[33me7765d6[m added fast mode booking for weekend
+[33m22f281a[m fixed alot of bugs
+[33m772974c[m fixed alot of bugs
+[33m493b25f[m fixed alot of bugs
+[33m611d39c[m fixed alot of bugs
+[33m0523c3e[m fixed alot of bugs
+[33m5d646a0[m fixed alot of bugs
+[33m62be0f3[m fixed alot of bugs
+[33maff99f9[m fixed alot of bugs
+[33m5e81f90[m fixed alot of bugs
+[33m5aa5c4e[m fixed alot of bugs
+[33mb4f06fb[m fixed alot of bugs
+[33ma88364b[m fixed alot of bugs
+[33ma79f162[m fixed alot of bugs
+[33me4cc331[m fixed alot of bugs
+[33m11d1690[m fixed alot of bugs
+[33m38a1014[m fixed alot of bugs
+[33m96b3e40[m fixed alot of bugs
+[33m2580ddc[m fixed alot of bugs
+[33ma5eb6cf[m fixed bugs that caused issues with booking and fetching data
+[33mec0425a[m fixed bugs that caused issues with booking and fetching data
+[33m7b12099[m fix to book only 4 slots and added fallback to book other options
+[33mff54c32[m fix to book only 4 slots
+[33m7a1fdf3[m readme updated
+[33m4dda99c[m docker deployment  added
+[33m259d74d[m docker deployment  added
+[33m44ea878[m docker deployment  added
+[33m6de63f0[m ignore docker file
+[33m8cea6b9[m added auth
+[33mf21f61f[m added auth
+[33m2f37b8f[m update README
+[33m96c32df[m fully updated added The system is now working perfectly with:
+[33m406f0c6[m Remove .claude folder from tracking
+[33mceb84c2[m gitignore update
+[33m27406a1[m Merge branch 'main' of https://github.com/kaizenapps/teeparty
+[33mb5272b6[m gitignore update
+[33mb7ab0a9[m Merge pull request #2 from kaizenapps/BaseProject
+[33m951e6a2[m Merge pull request #1 from kaizenapps/main
+[33md903d5d[m Merge branch 'BaseProject' into main
+[33m45af4a1[m[33m ([m[1;31morigin/BaseProject[m[33m, [m[1;32mBaseProject[m[33m)[m merged into one project both front and back
+[33m4e0be34[m updated README.md
+[33mff70b38[m[33m ([m[1;31morigin/SafeProject[m[33m)[m updated README.md
+[33md20ef37[m updated README.md
+[33m4154a60[m updated README.md
+[33m727711b[m[33m ([m[1;32mmaster[m[33m)[m Initial commit
